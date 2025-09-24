@@ -316,16 +316,23 @@
                 const img = document.getElementById('albumArt');
                 const defaultArt = document.getElementById('defaultArt');
                 
+                console.log('Loading image:', imageUrl);
+                
                 img.onload = function() {
+                    console.log('Image loaded successfully');
                     img.style.display = 'block';
                     defaultArt.style.display = 'none';
                 };
                 
-                img.onerror = function() {
+                img.onerror = function(e) {
+                    console.error('Image failed to load:', e);
+                    console.log('Falling back to default art');
                     img.style.display = 'none';
                     defaultArt.style.display = 'flex';
                 };
                 
+                // CORS 문제 해결을 위해 crossOrigin 속성 추가
+                img.crossOrigin = 'anonymous';
                 img.src = decodeURIComponent(imageUrl);
             }
         }
