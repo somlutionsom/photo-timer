@@ -308,6 +308,122 @@
         
         let currentColorIndex = 0;
 
+        // State persistence system
+        const storage = {
+            save: (key, value) => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                } catch(e) {
+                    try {
+                        sessionStorage.setItem(key, JSON.stringify(value));
+                    } catch(e2) {
+                        console.log('Storage unavailable');
+                    }
+                }
+            },
+            load: (key) => {
+                try {
+                    return JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key));
+                } catch(e) {
+                    return null;
+                }
+            },
+            remove: (key) => {
+                try {
+                    localStorage.removeItem(key);
+                    sessionStorage.removeItem(key);
+                } catch(e) {
+                    console.log('Storage unavailable');
+                }
+            }
+        };
+
+        // Save current state
+        const saveState = () => {
+            storage.save('ipodTimer', {
+                isRunning: !!timerInterval,
+                selectedTime,
+                remainingTime,
+                isPaused,
+                pausedTime,
+                startTimestamp,
+                currentColorIndex,
+                currentTimeIndex,
+                lastSaveTime: Date.now()
+            });
+        };
+
+        // Clear saved state
+        const clearState = () => {
+            storage.remove('ipodTimer');
+        };
+
+        // Restore state from storage
+        const restoreState = () => {
+            const state = storage.load('ipodTimer');
+            if (!state) return false;
+
+            // Restore color first
+            if (state.currentColorIndex !== undefined) {
+                currentColorIndex = state.currentColorIndex;
+                const container = document.querySelector('.ipod-container');
+                const gradientBackground = document.querySelector('.gradient-background');
+                container.style.backgroundImage = `url('${colorImages[currentColorIndex]}')`;
+                gradientBackground.style.backgroundImage = `url('${gradientImages[currentColorIndex]}')`;
+            }
+
+            // Restore time selector
+            if (state.currentTimeIndex !== undefined) {
+                currentTimeIndex = state.currentTimeIndex;
+                document.getElementById('timeDisplay').textContent = timeOptions[currentTimeIndex] + 'M';
+            }
+
+            // Restore timer if it was running
+            if (state.isRunning && state.selectedTime) {
+                selectedTime = state.selectedTime;
+                totalTime = state.selectedTime * 60 * 1000;
+                isPaused = state.isPaused || false;
+                
+                // Calculate current remaining time based on elapsed time since last save
+                const now = Date.now();
+                const timeSinceLastSave = now - (state.lastSaveTime || now);
+                
+                if (state.isPaused) {
+                    // If was paused, use saved remaining time
+                    remainingTime = state.remainingTime || totalTime;
+                    pausedTime = state.pausedTime || 0;
+                    startTimestamp = now; // Reset start time for when resumed
+                } else {
+                    // If was running, calculate new remaining time
+                    const totalElapsed = (now - state.startTimestamp) - (state.pausedTime || 0);
+                    remainingTime = Math.max(0, totalTime - totalElapsed);
+                }
+
+                // Only restore if there's time remaining
+                if (remainingTime > 0) {
+                    // Switch to timer display
+                    document.getElementById('timeSelector').style.display = 'none';
+                    document.getElementById('timerDisplay').style.display = 'flex';
+                    document.getElementById('pauseBtn').style.display = 'block';
+
+                    updateDisplay();
+
+                    if (!isPaused) {
+                        startTimestamp = now;
+                        timerInterval = setInterval(updateTimer, 50);
+                    }
+                    
+                    return true;
+                } else {
+                    // Timer would have completed, clear state and reset
+                    clearState();
+                    resetTimer();
+                    return false;
+                }
+            }
+            return false;
+        };
+
         // 시간 변경 (화살표 클릭)
         function changeTime(direction) {
             currentTimeIndex += direction;
@@ -315,6 +431,7 @@
             if (currentTimeIndex >= timeOptions.length) currentTimeIndex = 0;
             
             document.getElementById('timeDisplay').textContent = timeOptions[currentTimeIndex] + 'M';
+            saveState(); // Save state when time selection changes
         }
 
         // 선택된 시간으로 타이머 시작
@@ -379,6 +496,8 @@
             
             // 타이머 실행
             timerInterval = setInterval(updateTimer, 50);
+            
+            saveState(); // Save state when timer starts
         }
 
         // 타이머 업데이트
@@ -418,12 +537,16 @@
             } else {
                 startTimestamp = Date.now();
             }
+            
+            saveState(); // Save state when pause/resume occurs
         }
 
         // 타이머 완료
         function onTimerComplete() {
             clearInterval(timerInterval);
             document.querySelector('.screen-content').classList.add('timer-complete');
+            
+            clearState(); // Clear saved state when timer completes naturally
             
             setTimeout(() => {
                 resetTimer();
@@ -443,6 +566,8 @@
             remainingTime = 0;
             isPaused = false;
             pausedTime = 0;
+            
+            clearState(); // Clear saved state when user manually resets
         }
 
         // Color cycling function
@@ -464,11 +589,26 @@
             // Update gradient background to match
             const gradientBackground = document.querySelector('.gradient-background');
             gradientBackground.style.backgroundImage = `url('${gradientImages[currentColorIndex]}')`;
+            
+            saveState(); // Save state when color changes
         }
+
+        // Add visibility change listener for state persistence
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                saveState(); // Save state when page becomes hidden
+            }
+        });
+
+        // Add beforeunload listener for state persistence
+        window.addEventListener('beforeunload', saveState);
 
         // 페이지 로드 시 이미지 로드
         window.onload = function() {
             loadImageFromURL();
+            
+            // Try to restore previous state first
+            const stateRestored = restoreState();
             
             // Add color cycling click listener to container
             const container = document.querySelector('.ipod-container');
