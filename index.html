@@ -52,6 +52,8 @@
             background-size: cover;
             background-position: center;
             z-index: 1;
+            opacity: 0.9;      /* 90% opacity */
+            filter: blur(3px); /* 3px 블러 효과 */
         }
 
         .screen-content {
@@ -82,7 +84,7 @@
         }
 
         .nav-arrow {
-            color: #fff;       /* unchanged - color */
+            color: #fff;       /* 흰색으로 복원 */
             font-size: 14.4px; /* 12px × 1.2 → 14.4px */
             cursor: pointer;
             transition: all 0.3s ease; /* unchanged - transition time */
@@ -91,12 +93,12 @@
         }
 
         .nav-arrow:hover {
-            color: rgba(255, 255, 255, 0.9); /* 0.8 → 0.9 (10% 밝기 증가) */
+            color: rgba(255, 255, 255, 0.9); /* 흰색으로 복원 */
             transform: scale(1.2); /* unchanged - scale ratio */
         }
 
         .time-display {
-            color: rgba(255, 255, 255, 1); /* 0.9 → 1 (10% 밝기 증가) */
+            color: rgba(255, 255, 255, 1); /* 흰색으로 복원 */
             font-size: 21.6px; /* 18px × 1.2 → 21.6px */
             font-weight: 900;  /* unchanged */
             cursor: pointer;
@@ -108,7 +110,7 @@
         }
 
         .time-display:hover {
-            color: rgba(255, 255, 255, 1); /* 유지 - 이미 최대 밝기 */
+            color: rgba(255, 255, 255, 1); /* 흰색으로 복원 */
             transform: scale(1.1); /* unchanged - scale ratio */
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.7); /* 0.6 → 0.7 (10% 밝기 증가) */
         }
@@ -128,16 +130,16 @@
         }
 
         .album-art-container {
-            width: 99px;       /* 82.5px × 1.2 → 99px */
-            height: 81px;      /* 67.5px × 1.2 → 81px */
-            margin: 7.8px auto; /* 6.5px × 1.2 → 7.8px */
-            border-radius: 6px; /* 5px × 1.2 → 6px */
+            width: 89px;
+            height: 86px;
+            margin: 4.8px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 1.2px 4.8px rgba(0,0,0,0.4); /* 1px × 1.2 → 1.2px, 4px × 1.2 → 4.8px */
-            transition: all 0.3s ease; /* unchanged - transition time */
+            box-shadow: 0 1.2px 4.8px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
-            background: linear-gradient(135deg, #444 0%, #222 100%); /* #333→#444, #111→#222 (10% 밝기 증가) */
+            background: linear-gradient(135deg, #444 0%, #222 100%);
         }
 
         .album-art-container:hover {
@@ -289,6 +291,23 @@
         let startTimestamp = null;
         let pausedTime = 0;
 
+        // Color changing feature
+        const colorImages = [
+            './아이팟 틀 이미지.png',        // default
+            './아이팟 틀 이미지_blue.png',   // blue
+            './아이팟 틀 이미지_pink.png',   // pink
+            './아이팟 틀 이미지_purple.png'  // purple
+        ];
+        
+        const gradientImages = [
+            './검은색 그라데이션 배경.png',    // default - black
+            './파란색 그라데이션 배경.png',    // blue
+            './분홍색 그라데이션 배경.png',    // pink
+            './보라색 그라데이션 배경.png'     // purple
+        ];
+        
+        let currentColorIndex = 0;
+
         // 시간 변경 (화살표 클릭)
         function changeTime(direction) {
             currentTimeIndex += direction;
@@ -426,9 +445,35 @@
             pausedTime = 0;
         }
 
+        // Color cycling function
+        function cycleColor(event) {
+            // Check if click is on screen area, wheel buttons, or overlays - if so, ignore
+            if (event.target.closest('.screen-area') || 
+                event.target.closest('.button-overlays') ||
+                event.target.closest('.center-button-overlay') ||
+                event.target.closest('.pause-button-overlay')) {
+                return;
+            }
+
+            currentColorIndex = (currentColorIndex + 1) % colorImages.length;
+            
+            // Update iPod container color
+            const container = document.querySelector('.ipod-container');
+            container.style.backgroundImage = `url('${colorImages[currentColorIndex]}')`;
+            
+            // Update gradient background to match
+            const gradientBackground = document.querySelector('.gradient-background');
+            gradientBackground.style.backgroundImage = `url('${gradientImages[currentColorIndex]}')`;
+        }
+
         // 페이지 로드 시 이미지 로드
         window.onload = function() {
             loadImageFromURL();
+            
+            // Add color cycling click listener to container
+            const container = document.querySelector('.ipod-container');
+            container.addEventListener('click', cycleColor);
+            container.style.cursor = 'pointer';
         };
     </script>
 </body>
