@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPod Timer Widget - 50% Scaled</title>
+    <title>iPod Timer Widget</title>
     <style>
         * {
             margin: 0;
@@ -12,8 +12,8 @@
         }
 
         body {
-            width: 360px;      /* 300px × 1.2 → 360px */
-            height: 180px;     /* 150px × 1.2 → 180px */
+            width: 600px;
+            height: 300px;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: transparent;
@@ -23,8 +23,8 @@
         }
 
         .ipod-container {
-            width: 360px;      /* 300px × 1.2 → 360px */
-            height: 180px;     /* 150px × 1.2 → 180px */
+            width: 600px;
+            height: 300px;
             position: relative;
             background-image: url('./아이팟 틀 이미지.png');
             background-size: contain;
@@ -34,20 +34,20 @@
 
         .screen-area {
             position: absolute;
-            width: 179.4px;    /* 149.5px × 1.2 → 179.4px */
-            height: 134.4px;   /* 112px × 1.2 → 134.4px */
-            left: 12.6px;      /* 10.5px × 1.2 → 12.6px */
-            top: 22.2px;       /* 18.5px × 1.2 → 22.2px */
-            border-radius: 4.8px; /* 4px × 1.2 → 4.8px */
+            width: 299px;
+            height: 224px;
+            left: 21px;
+            top: 37px;
+            border-radius: 8px;ㄴ
             overflow: hidden;
         }
 
         .gradient-background {
             position: absolute;
-            top: 4.2px;        /* 3.5px × 1.2 → 4.2px */
-            left: 8.4px;       /* 7px × 1.2 → 8.4px */
-            width: 96%;        /* unchanged - percentage */
-            height: 94%;       /* unchanged - percentage */
+            top: 7px;
+            left: 14px;
+            width: 96%;
+            height: 94%;
             background-image: url('./검은색 그라데이션 배경.png');
             background-size: cover;
             background-position: center;
@@ -72,49 +72,49 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            animation: fadeIn 0.3s ease; /* unchanged - animation time */
+            animation: fadeIn 0.3s ease;
         }
 
         .time-navigation {
             display: flex;
             align-items: center;
-            gap: 18px;         /* 15px × 1.2 → 18px */
+            gap: 30px;
         }
 
         .nav-arrow {
-            color: #fff;       /* unchanged - color */
-            font-size: 14.4px; /* 12px × 1.2 → 14.4px */
+            color: #fff;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.3s ease; /* unchanged - transition time */
+            transition: all 0.3s ease;
             user-select: none;
-            padding: 4.8px;    /* 4px × 1.2 → 4.8px */
+            padding: 8px;
         }
 
         .nav-arrow:hover {
-            color: rgba(255, 255, 255, 0.9); /* 0.8 → 0.9 (10% 밝기 증가) */
-            transform: scale(1.2); /* unchanged - scale ratio */
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.2);
         }
 
         .time-display {
-            color: rgba(255, 255, 255, 1); /* 0.9 → 1 (10% 밝기 증가) */
-            font-size: 21.6px; /* 18px × 1.2 → 21.6px */
-            font-weight: 900;  /* unchanged */
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 36px;
+            font-weight: 900;
             cursor: pointer;
-            transition: all 0.3s ease; /* unchanged - transition time */
-            padding: 2.4px -10.8px; /* 2px × 1.2 → 2.4px, -9px × 1.2 → -10.8px */
-            letter-spacing: 1.2px; /* 1px × 1.2 → 1.2px */
-            min-width: 60px;   /* 50px × 1.2 → 60px */
+            transition: all 0.3s ease;
+            padding: 4px -18px;
+            letter-spacing: 2px;
+            min-width: 100px;
             text-align: center;
         }
 
         .time-display:hover {
-            color: rgba(255, 255, 255, 1); /* 유지 - 이미 최대 밝기 */
-            transform: scale(1.1); /* unchanged - scale ratio */
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.7); /* 0.6 → 0.7 (10% 밝기 증가) */
+            color: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
         }
 
         .time-display:active {
-            transform: scale(0.95); /* unchanged - scale ratio */
+            transform: scale(0.95);
         }
 
         /* 타이머 실행 화면 */
@@ -122,27 +122,27 @@
             display: none;
             width: 100%;
             height: 100%;
-            padding: 12px;     /* 10px × 1.2 → 12px */
+            padding: 20px;
             flex-direction: column;
-            animation: fadeIn 0.3s ease; /* unchanged - animation time */
+            animation: fadeIn 0.3s ease;
         }
 
         .album-art-container {
-            width: 99px;       /* 82.5px × 1.2 → 99px */
-            height: 81px;      /* 67.5px × 1.2 → 81px */
-            margin: 7.8px auto; /* 6.5px × 1.2 → 7.8px */
-            border-radius: 6px; /* 5px × 1.2 → 6px */
+            width: 165px;
+            height: 135px;
+            margin: 13px auto;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 1.2px 4.8px rgba(0,0,0,0.4); /* 1px × 1.2 → 1.2px, 4px × 1.2 → 4.8px */
-            transition: all 0.3s ease; /* unchanged - transition time */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
-            background: linear-gradient(135deg, #444 0%, #222 100%); /* #333→#444, #111→#222 (10% 밝기 증가) */
+            background: linear-gradient(135deg, #333 0%, #111 100%);
         }
 
         .album-art-container:hover {
-            transform: scale(1.03); /* unchanged - scale ratio */
-            box-shadow: 0 1.8px 6px rgba(0,0,0,0.4); /* 1.5px × 1.2 → 1.8px, 5px × 1.2 → 6px */
+            transform: scale(1.03);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
         }
 
         .album-art {
@@ -155,45 +155,45 @@
         .default-art {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #7788ff 0%, #8765b3 100%); /* #667eea→#7788ff, #764ba2→#8765b3 (10% 밝기 증가) */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,0.6); /* 0.5 → 0.6 (10% 밝기 증가) */
-            font-size: 36px;   /* 30px × 1.2 → 36px */
+            color: rgba(255,255,255,0.5);
+            font-size: 60px;
         }
 
         .progress-container {
             position: absolute;
-            bottom: 13.2px;    /* 11px × 1.2 → 13.2px */
-            left: 23.4px;      /* 19.5px × 1.2 → 23.4px */
-            right: 35.4px;     /* 29.5px × 1.2 → 35.4px */
-            height: 6.76px;    /* 5.63px × 1.2 → 6.76px */
-            background: #888888; /* #777777 → #888888 (10% 밝기 증가) */
-            border-radius: 1.8px; /* 1.5px × 1.2 → 1.8px */
+            bottom: 22px;
+            left: 39px;
+            right: 59px;
+            height: 11.26px;
+            background: #777777;
+            border-radius: 3px;
             overflow: hidden;
-            opacity: 0.9;      /* unchanged - opacity */
+            opacity: 0.9;
         }
 
         .progress-bar {
             height: 100%;
-            background: #fff;  /* unchanged - color */
-            border-radius: 1.8px; /* 1.5px × 1.2 → 1.8px */
-            transition: width 0.1s linear; /* unchanged - transition time */
-            box-shadow: 0 0 3.6px rgba(255,255,255,0.5); /* 0.4 → 0.5 (10% 밝기 증가) */
-            opacity: 0.9;      /* unchanged - opacity */
+            background: #fff;
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 6px rgba(255,255,255,0.4);
+            opacity: 0.9;
         }
 
         .time-remaining {
             position: absolute;
-            bottom: 9.6px;     /* 8px × 1.2 → 9.6px */
-            right: 3.6px;      /* 3px × 1.2 → 3.6px */
-            color: #fff;       /* unchanged - color */
-            font-size: 9.6px;  /* 8px × 1.2 → 9.6px */
-            font-weight: 600;  /* unchanged */
+            bottom: 16px;
+            right: 6px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
             font-family: 'Courier New', monospace;
-            letter-spacing: -0.3px; /* -0.25px × 1.2 → -0.3px */
-            padding: 1.2px 2.4px; /* 1px × 1.2 → 1.2px, 2px × 1.2 → 2.4px */
+            letter-spacing: -0.5px;
+            padding: 2px 4px;
         }
 
         /* 오버레이 버튼 영역 */
@@ -208,38 +208,42 @@
 
         .center-button-overlay {
             position: absolute;
-            right: 78px;       /* 65px × 1.2 → 78px */
+            right: 130px;
             top: 50%;
             transform: translateY(-50%);
-            width: 33px;       /* 27.5px × 1.2 → 33px */
-            height: 33px;      /* 27.5px × 1.2 → 33px */
+            width: 55px;
+            height: 55px;
             cursor: pointer;
             pointer-events: auto;
             border-radius: 50%;
+            /* 디버깅용 - 나중에 삭제 */
+            /* background: rgba(255, 0, 0, 0.2); */
         }
 
         .pause-button-overlay {
             position: absolute;
-            right: 84px;       /* 70px × 1.2 → 84px */
-            bottom: 36px;      /* 30px × 1.2 → 36px */
-            width: 21px;       /* 17.5px × 1.2 → 21px */
-            height: 15px;      /* 12.5px × 1.2 → 15px */
+            right: 140px;
+            bottom: 60px;
+            width: 35px;
+            height: 25px;
             cursor: pointer;
             pointer-events: auto;
+            /* 디버깅용 - 나중에 삭제 */
+            /* background: rgba(0, 255, 0, 0.2); */
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }  /* unchanged */
-            to { opacity: 1; }    /* unchanged */
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }  /* unchanged */
-            50% { opacity: 0.3; }      /* unchanged */
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .timer-complete .progress-bar {
-            animation: blink 0.5s ease 3; /* unchanged - animation */
+            animation: blink 0.5s ease 3;
         }
     </style>
 </head>
