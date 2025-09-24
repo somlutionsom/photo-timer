@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPod Timer Widget</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 600px;
+            height: 300px;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ipod-container {
+            width: 600px;
+            height: 300px;
+            position: relative;
+            background-image: url('./아이팟 틀 이미지.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .screen-area {
+            position: absolute;
+            width: 299px;
+            height: 224px;
+            left: 21px;
+            top: 37px;
+            border-radius: 8px;ㄴ
+            overflow: hidden;
+        }
+
+        .gradient-background {
+            position: absolute;
+            top: 7px;
+            left: 14px;
+            width: 96%;
+            height: 94%;
+            background-image: url('./검은색 그라데이션 배경.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        /* 초기 선택 화면 */
+        .time-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .time-navigation {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-arrow {
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            padding: 8px;
+        }
+
+        .nav-arrow:hover {
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.2);
+        }
+
+        .time-display {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 36px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px -18px;
+            letter-spacing: 2px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .time-display:hover {
+            color: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+        }
+
+        .time-display:active {
+            transform: scale(0.95);
+        }
+
+        /* 타이머 실행 화면 */
+        .timer-display {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .album-art-container {
+            width: 165px;
+            height: 135px;
+            margin: 13px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+        }
+
+        .album-art-container:hover {
+            transform: scale(1.03);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+        }
+
+        .album-art {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .default-art {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 60px;
+        }
+
+        .progress-container {
+            position: absolute;
+            bottom: 22px;
+            left: 39px;
+            right: 59px;
+            height: 11.26px;
+            background: #777777;
+            border-radius: 3px;
+            overflow: hidden;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #fff;
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 6px rgba(255,255,255,0.4);
+            opacity: 0.9;
+        }
+
+        .time-remaining {
+            position: absolute;
+            bottom: 16px;
+            right: 6px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            letter-spacing: -0.5px;
+            padding: 2px 4px;
+        }
+
+        /* 오버레이 버튼 영역 */
+        .button-overlays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .center-button-overlay {
+            position: absolute;
+            right: 130px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55px;
+            height: 55px;
+            cursor: pointer;
+            pointer-events: auto;
+            border-radius: 50%;
+            /* 디버깅용 - 나중에 삭제 */
+            /* background: rgba(255, 0, 0, 0.2); */
+        }
+
+        .pause-button-overlay {
+            position: absolute;
+            right: 140px;
+            bottom: 60px;
+            width: 35px;
+            height: 25px;
+            cursor: pointer;
+            pointer-events: auto;
+            /* 디버깅용 - 나중에 삭제 */
+            /* background: rgba(0, 255, 0, 0.2); */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .timer-complete .progress-bar {
+            animation: blink 0.5s ease 3;
+        }
+    </style>
+</head>
+<body>
+    <div class="ipod-container">
+        <div class="screen-area">
+            <div class="gradient-background"></div>
+            <div class="screen-content">
+                <!-- 시간 선택 화면 -->
+                <div class="time-selector" id="timeSelector">
+                    <div class="time-navigation">
+                        <span class="nav-arrow" onclick="changeTime(-1)">◀</span>
+                        <span class="time-display" id="timeDisplay" onclick="startSelectedTimer()">10M</span>
+                        <span class="nav-arrow" onclick="changeTime(1)">▶</span>
+                    </div>
+                </div>
+
+                <!-- 타이머 실행 화면 -->
+                <div class="timer-display" id="timerDisplay">
+                    <div class="album-art-container" id="albumContainer">
+                        <div class="default-art" id="defaultArt">♪</div>
+                        <img class="album-art" id="albumArt" style="display:none;" alt="Album Art">
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="time-remaining" id="timeRemaining">00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오버레이 버튼 영역 -->
+        <div class="button-overlays">
+            <div class="center-button-overlay" onclick="resetTimer()"></div>
+            <div class="pause-button-overlay" id="pauseBtn" onclick="togglePause()" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const timeOptions = [10, 20, 30];
+        let currentTimeIndex = 0;
+        let selectedTime = 0;
+        let totalTime = 0;
+        let remainingTime = 0;
+        let isPaused = false;
+        let timerInterval = null;
+        let startTimestamp = null;
+        let pausedTime = 0;
+
+        // 시간 변경 (화살표 클릭)
+        function changeTime(direction) {
+            currentTimeIndex += direction;
+            if (currentTimeIndex < 0) currentTimeIndex = timeOptions.length - 1;
+            if (currentTimeIndex >= timeOptions.length) currentTimeIndex = 0;
+            
+            document.getElementById('timeDisplay').textContent = timeOptions[currentTimeIndex] + 'M';
+        }
+
+        // 선택된 시간으로 타이머 시작
+        function startSelectedTimer() {
+            startTimer(timeOptions[currentTimeIndex]);
+        }
+
+        // URL 파라미터에서 이미지 가져오기
+        function loadImageFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const imageUrl = params.get('image');
+            
+            if (imageUrl) {
+                const img = document.getElementById('albumArt');
+                const defaultArt = document.getElementById('defaultArt');
+                
+                img.onload = function() {
+                    img.style.display = 'block';
+                    defaultArt.style.display = 'none';
+                };
+                
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    defaultArt.style.display = 'flex';
+                };
+                
+                img.src = decodeURIComponent(imageUrl);
+            }
+        }
+
+        // 타이머 시작
+        function startTimer(minutes) {
+            selectedTime = minutes;
+            totalTime = minutes * 60 * 1000;
+            remainingTime = totalTime;
+            isPaused = false;
+            startTimestamp = Date.now();
+            pausedTime = 0;
+
+            // 화면 전환
+            document.getElementById('timeSelector').style.display = 'none';
+            document.getElementById('timerDisplay').style.display = 'flex';
+            document.getElementById('pauseBtn').style.display = 'block';
+
+            // 초기 상태 설정
+            updateDisplay();
+            
+            // 타이머 실행
+            timerInterval = setInterval(updateTimer, 50);
+        }
+
+        // 타이머 업데이트
+        function updateTimer() {
+            if (!isPaused) {
+                const currentTime = Date.now();
+                const elapsed = currentTime - startTimestamp - pausedTime;
+                remainingTime = Math.max(0, totalTime - elapsed);
+                
+                updateDisplay();
+                
+                if (remainingTime <= 0) {
+                    onTimerComplete();
+                }
+            }
+        }
+
+        // 화면 업데이트
+        function updateDisplay() {
+            const percentage = (remainingTime / totalTime) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            
+            const minutes = Math.floor(remainingTime / 60000);
+            const seconds = Math.floor((remainingTime % 60000) / 1000);
+            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timeRemaining').textContent = display;
+        }
+
+        // 일시정지/재개
+        function togglePause() {
+            if (remainingTime <= 0) return;
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                pausedTime += Date.now() - startTimestamp;
+            } else {
+                startTimestamp = Date.now();
+            }
+        }
+
+        // 타이머 완료
+        function onTimerComplete() {
+            clearInterval(timerInterval);
+            document.querySelector('.screen-content').classList.add('timer-complete');
+            
+            setTimeout(() => {
+                resetTimer();
+            }, 3000);
+        }
+
+        // 타이머 리셋 (MUSIC 버튼)
+        function resetTimer() {
+            clearInterval(timerInterval);
+            document.querySelector('.screen-content').classList.remove('timer-complete');
+            document.getElementById('timeSelector').style.display = 'flex';
+            document.getElementById('timerDisplay').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'none';
+            
+            selectedTime = 0;
+            totalTime = 0;
+            remainingTime = 0;
+            isPaused = false;
+            pausedTime = 0;
+        }
+
+        // 페이지 로드 시 이미지 로드
+        window.onload = function() {
+            loadImageFromURL();
+        };
+    </script>
+</body>
+</html>
