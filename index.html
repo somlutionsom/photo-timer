@@ -326,12 +326,20 @@
                 
                 img.onerror = function(e) {
                     console.error('Image failed to load:', e);
-                    console.log('Falling back to default art');
-                    img.style.display = 'none';
-                    defaultArt.style.display = 'flex';
+                    console.log('Trying CORS proxy...');
+                    
+                    // CORS 프록시를 사용하여 재시도
+                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/' + decodeURIComponent(imageUrl);
+                    img.src = proxyUrl;
+                    
+                    img.onerror = function() {
+                        console.log('CORS proxy also failed, falling back to default art');
+                        img.style.display = 'none';
+                        defaultArt.style.display = 'flex';
+                    };
                 };
                 
-                // CORS 문제 해결을 위해 crossOrigin 속성 추가
+                // 먼저 직접 로드 시도
                 img.crossOrigin = 'anonymous';
                 img.src = decodeURIComponent(imageUrl);
             }
