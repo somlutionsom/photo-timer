@@ -129,7 +129,6 @@
             animation: fadeIn 0.3s ease; /* unchanged - animation time */
         }
 
-<<<<<<< HEAD
         /* 완료 메시지 */
         .complete-message {
             position: absolute;
@@ -144,9 +143,6 @@
             display: none;
             animation: fadeIn 0.5s ease;
         }
-
-=======
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
         .album-art-container {
             width: 89px;
             height: 86px;
@@ -228,13 +224,8 @@
 
         .center-button-overlay {
             position: absolute;
-<<<<<<< HEAD
             right: 66px;
             top: 49%;
-=======
-            right: 78px;       /* 65px × 1.2 → 78px */
-            top: 50%;
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
             transform: translateY(-50%);
             width: 33px;       /* 27.5px × 1.2 → 33px */
             height: 33px;      /* 27.5px × 1.2 → 33px */
@@ -245,13 +236,8 @@
 
         .pause-button-overlay {
             position: absolute;
-<<<<<<< HEAD
             right: 74px;
             bottom: 36px;
-=======
-            right: 84px;       /* 70px × 1.2 → 84px */
-            bottom: 36px;      /* 30px × 1.2 → 36px */
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
             width: 21px;       /* 17.5px × 1.2 → 21px */
             height: 15px;      /* 12.5px × 1.2 → 15px */
             cursor: pointer;
@@ -297,11 +283,8 @@
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
                     <div class="time-remaining" id="timeRemaining">00:00</div>
-<<<<<<< HEAD
                     <!-- 완료 메시지 -->
                     <div class="complete-message" id="completeMessage">COMPLETE!</div>
-=======
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
                 </div>
             </div>
         </div>
@@ -537,14 +520,9 @@
         function updateTimer() {
             if (!isPaused) {
                 const currentTime = Date.now();
-<<<<<<< HEAD
                 const currentSessionElapsed = currentTime - startTimestamp;
                 const totalElapsed = pausedTime + currentSessionElapsed;
                 remainingTime = Math.max(0, totalTime - totalElapsed);
-=======
-                const elapsed = currentTime - startTimestamp - pausedTime;
-                remainingTime = Math.max(0, totalTime - elapsed);
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
                 
                 updateDisplay();
                 
@@ -569,7 +547,6 @@
         function togglePause() {
             if (remainingTime <= 0) return;
             
-<<<<<<< HEAD
             if (isPaused) {
                 // 재개할 때: 새로운 시작 시간을 설정
                 isPaused = false;
@@ -581,14 +558,6 @@
                 clearInterval(timerInterval);
                 const currentElapsed = Date.now() - startTimestamp;
                 pausedTime += currentElapsed;
-=======
-            isPaused = !isPaused;
-            
-            if (isPaused) {
-                pausedTime += Date.now() - startTimestamp;
-            } else {
-                startTimestamp = Date.now();
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
             }
             
             saveState(); // Save state when pause/resume occurs
@@ -597,7 +566,6 @@
         // 타이머 완료
         function onTimerComplete() {
             clearInterval(timerInterval);
-<<<<<<< HEAD
             timerInterval = null;
             
             // COMPLETE! 메시지 표시
@@ -605,33 +573,18 @@
             document.querySelector('.screen-content').classList.add('timer-complete');
             
             clearState(); // Clear saved state when timer completes naturally
-=======
-            document.querySelector('.screen-content').classList.add('timer-complete');
-            
-            clearState(); // Clear saved state when timer completes naturally
-            
-            setTimeout(() => {
-                resetTimer();
-            }, 3000);
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
         }
 
         // 타이머 리셋 (MUSIC 버튼)
         function resetTimer() {
             clearInterval(timerInterval);
-<<<<<<< HEAD
             timerInterval = null;
             
-=======
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
             document.querySelector('.screen-content').classList.remove('timer-complete');
             document.getElementById('timeSelector').style.display = 'flex';
             document.getElementById('timerDisplay').style.display = 'none';
             document.getElementById('pauseBtn').style.display = 'none';
-<<<<<<< HEAD
             document.getElementById('completeMessage').style.display = 'none';
-=======
->>>>>>> 4f7196d7db2356f4a6154f8f80e8d8ee7859a3f6
             
             selectedTime = 0;
             totalTime = 0;
